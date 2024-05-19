@@ -15,6 +15,7 @@ def create_app():
     init_db()
 
     create_sw_major_notice()
+    create_sw_7up_notice()
 
     @app.route("/sw_major_notice")
     def get_sw_major_notice_metadata():
@@ -28,6 +29,13 @@ def create_app():
 
         # JSON 형태로 반환
         return jsonify(sw_major_notice_detail)
+
+    @app.route("/sw_7up_notice")
+    def get_sw_7up_notice():
+        sw_7up_notice = read_sw_7up_notice()
+
+        # JSON 형태로 반환
+        return jsonify(sw_7up_notice)
 
     return app
 
