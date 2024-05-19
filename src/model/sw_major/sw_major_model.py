@@ -36,4 +36,25 @@ def create_sw_major_notice():
 
     return
 
+# READ(all)
+def read_sw_major_notice_metadata():
+    conn = sqlite3.connect("../db")
+    sw_major_metadata = []
+    c = conn.cursor()
+    c.execute("SELECT * FROM sw_major_notice")
+    while True:
+        row = c.fetchone()
 
+        if row == None:
+            break
+        metadata = {
+            "notice_id": row[0],
+            "category": row[1],
+            "title": row[2],
+            "created_at": row[3],
+        }
+        sw_major_metadata.append(metadata)
+    c.close()
+    conn.close()
+
+    return sw_major_metadata
