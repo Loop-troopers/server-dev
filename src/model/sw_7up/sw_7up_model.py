@@ -36,3 +36,22 @@ def create_sw_7up_notice():
     c.close()
     conn.commit()
     conn.close()
+
+# READ
+def read_sw_7up_notice():
+    conn = sqlite3.connect("../db")
+    sw_7up_metadata = []
+    c = conn.cursor()
+    c.execute("SELECT * FROM sw_7up_notice")
+    while True:
+        row = c.fetchone()
+
+        if row == None:
+            break
+        notice_item = {"notice_id": row[0], "title": row[1], "body": row[2]}
+        sw_7up_metadata.append(notice_item)
+    c.close()
+    conn.close()
+
+    return sw_7up_metadata
+
