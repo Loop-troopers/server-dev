@@ -58,3 +58,21 @@ def read_sw_major_notice_metadata():
     conn.close()
 
     return sw_major_metadata
+
+# READ(detail)
+def read_sw_major_notice_detail(notice_id):
+    conn = sqlite3.connect("../db")
+
+    c = conn.cursor()
+    c.execute("SELECT * FROM sw_major_notice WHERE notice_id = ?",  (notice_id,))
+    row = c.fetchone()
+
+    notice_detail = {
+        "notice_id": row[0],
+        "body": row[4],
+        "other_elements": row[5],
+    }
+    c.close()
+    conn.close()
+
+    return notice_detail
