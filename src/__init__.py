@@ -14,6 +14,21 @@ def create_app():
     # 데이터베이스 초기화와 데이터 추가
     init_db()
 
+    create_sw_major_notice()
+
+    @app.route("/sw_major_notice")
+    def get_sw_major_notice_metadata():
+        sw_major_notice_metadata = read_sw_major_notice_metadata()
+
+        # JSON 형태로 반환
+        return jsonify(sw_major_notice_metadata)
+    @app.route("/sw_major_notice/<noticeId>")
+    def get_sw_major_notice_detail(noticeId):
+        sw_major_notice_detail = read_sw_major_notice_detail(noticeId)
+
+        # JSON 형태로 반환
+        return jsonify(sw_major_notice_detail)
+
     return app
 
 # 데이터베이스 초기화
