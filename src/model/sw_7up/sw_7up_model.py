@@ -48,7 +48,12 @@ def read_sw_7up_notice():
 
         if row == None:
             break
-        notice_item = {"notice_id": row[0], "title": row[1], "body": row[2]}
+        notice_item = {
+            "group": "sw_7up",
+            "notice_id": row[0],
+            "title": row[1],
+            "body": row[2]
+        }
         sw_7up_metadata.append(notice_item)
     c.close()
     conn.close()

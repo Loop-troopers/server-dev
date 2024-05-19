@@ -48,8 +48,9 @@ def read_sw_major_notice_metadata():
         if row == None:
             break
         metadata = {
+            "group": "sw_major",
             "notice_id": row[0],
-            "category": row[1],
+            # "category": row[1],
             "title": row[2],
             "created_at": row[3],
         }
@@ -69,6 +70,7 @@ def read_sw_major_notice_detail(notice_id):
 
     notice_detail = {
         "notice_id": row[0],
+        "category": row[1],
         "body": row[4],
         "other_elements": row[5],
     }
