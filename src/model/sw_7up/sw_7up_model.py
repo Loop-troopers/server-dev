@@ -16,7 +16,6 @@ def create_sw_7up_notice():
     existing_titles = set(row[1] for row in c.fetchall())
 
     for notice_item in all_notice:
-        print(notice_item)
         title = notice_item["title"]
         if title in existing_titles:
             continue
@@ -49,14 +48,32 @@ def read_sw_7up_notice():
         if row == None:
             break
         notice_item = {
-            "group": "sw_7up",
-            "notice_id": row[0],
+            "group": "sw_7up_notice",
+            "noticeId": row[0],
             "title": row[1],
-            "body": row[2]
         }
         sw_7up_metadata.append(notice_item)
     c.close()
     conn.close()
 
     return sw_7up_metadata
+
+# READ(detail)
+def read_sw_7up_notice_detail(notice_id):
+    conn = sqlite3.connect("../db")
+
+    c = conn.cursor()
+    c.execute("SELECT * FROM sw_7up_notice WHERE notice_id = ?",  (notice_id,))
+    row = c.fetchone()
+
+    notice_detail = {
+        "noticeId": row[0],
+        "title": row[1],
+        "body": row[2],
+        # "createdAt": row[3]
+    }
+    c.close()
+    conn.close()
+
+    return notice_detail
 

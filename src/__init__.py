@@ -1,9 +1,7 @@
-from flask import Flask, jsonify, make_response
-from flask_cors import CORS
+from flask import Flask, jsonify, request
 import sqlite3
 from src.model.sw_major.sw_major_model import create_sw_major_notice, read_sw_major_notice_metadata, read_sw_major_notice_detail
-from src.model.sw_7up.sw_7up_model import create_sw_7up_notice, read_sw_7up_notice
-import asyncio
+from src.model.sw_7up.sw_7up_model import create_sw_7up_notice, read_sw_7up_notice, read_sw_7up_notice_detail
 
 
 def create_app():
@@ -37,6 +35,25 @@ def create_app():
         # JSON 형태로 반환
         return jsonify(sw_7up_notice)
 
+    @app.route("/sw_7up_notice/<noticeId>")
+    def get_sw_7up_detail(noticeId):
+        sw_7up_notice_detail = read_sw_7up_notice_detail(noticeId)
+
+        # JSON 형태로 반환
+        return jsonify(sw_7up_notice_detail)
+
+    @app.route("/bookmark", methods=['POST'])
+    def set_bookmark():
+        # 요청에서 JSON 데이터를 가져오기
+        data = request.get_json()
+        print(data)
+
+        response = {
+            'received_data': data
+        }
+
+        return jsonify(response)
+
     return app
 
 # 데이터베이스 초기화
@@ -44,6 +61,7 @@ def init_db():
     print("Connected to db")
     conn = sqlite3.connect("../db")
     cursor = conn.cursor()
+    # 소웨 과페이지 테이블 생성
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS sw_major_notice
@@ -52,11 +70,14 @@ def init_db():
         title TEXT, 
         created_at TEXT,
         body TEXT,
-        other_elements TEXT)
+        image_urls TEXT,
+        tables TEXT
+        )
     """
     )
     conn.commit()
-
+    
+    # 소중사 과페이지 테이블 생성
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS sw_7up_notice
@@ -67,6 +88,18 @@ def init_db():
     )
     conn.commit()
 
+    # 북마크 테이블 생성
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS bookmark_notice
+        (id INTEGER PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        notice_id INTEGER NOT NULL,
+        notice_group TEXT NOT NULL)
+    """
+    )
+    conn.commit()
+    
     conn.close()
 
 
@@ -75,7 +108,6 @@ def main():
 
     # Flask 앱 실행
     app.run("0.0.0.0")
-
 
 if __name__ == "__main__":
     main()

@@ -19,15 +19,17 @@ def create_sw_major_notice():
         title = notice_item["title"]
         created_at = notice_item["createdAt"]
         body = notice_item["body"]
-        other_elements = notice_item["otherElements"]
+        image_urls = notice_item["imageUrls"]
+        tables = notice_item["tables"]
 
         # DB 반영
         c.execute(
             """
         INSERT INTO sw_major_notice
-        (notice_id, category, title, created_at, body, other_elements)
-        VALUES (?, ?, ?, ?, ?, ?)""",
-            (notice_id, category, title, created_at, body, other_elements),
+        (notice_id, category, title, created_at, body, image_urls, tables)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+            (notice_id, category, title, created_at, body, image_urls, tables),
         )
 
     c.close()
@@ -48,11 +50,10 @@ def read_sw_major_notice_metadata():
         if row == None:
             break
         metadata = {
-            "group": "sw_major",
-            "notice_id": row[0],
-            # "category": row[1],
+            "group": "sw_major_notice",
+            "noticeId": row[0],
             "title": row[2],
-            "created_at": row[3],
+            "createdAt": row[3],
         }
         sw_major_metadata.append(metadata)
     c.close()
@@ -69,10 +70,13 @@ def read_sw_major_notice_detail(notice_id):
     row = c.fetchone()
 
     notice_detail = {
-        "notice_id": row[0],
+        "noticeId": row[0],
         "category": row[1],
+        "title": row[2],
+        "createdAt": row[3],
         "body": row[4],
-        "other_elements": row[5],
+        "imageUrls": [",".join(row[5].split())],
+        "tables": row[6]
     }
     c.close()
     conn.close()
