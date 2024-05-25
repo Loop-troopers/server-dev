@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 import sqlite3
 from src.model.sw_major.sw_major_model import create_sw_major_notice, read_sw_major_notice_metadata, read_sw_major_notice_detail
 from src.model.sw_7up.sw_7up_model import create_sw_7up_notice, read_sw_7up_notice, read_sw_7up_notice_detail
+from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email
 
 
 def create_app():
