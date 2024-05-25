@@ -53,6 +53,22 @@ def create_app():
         }
 
         return jsonify(response)
+    
+    @app.route("/register", methods=["POST"])
+    def register(): #data.get ->
+        data = request.json
+        username = data.get("username")
+        password = data.get("password")
+        email = data.get("email")
+        print("정보", username, password, email)
+        if read_user_by_username(username):
+            return jsonify({"error": "Username already exists"}), 400
+        if read_user_by_email(email):
+            return jsonify({"error": "Email already exists"}), 400
+
+        create_user(username, password, email)
+        return jsonify({"message": "User created successfully"}), 201
+
 
     return app
 
