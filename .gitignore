@@ -1,6 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/pythonvanilla
 # Edit at https://www.toptal.com/developers/gitignore?templates=pythonvanilla
-
+scrapper-venv/
 ### PythonVanilla ###
 # Byte-compiled / optimized / DLL files
 .DS_Store
