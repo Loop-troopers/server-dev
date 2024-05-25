@@ -98,6 +98,20 @@ def init_db():
         notice_group TEXT NOT NULL)
     """
     )
+    
+    # 유저 테이블 생성
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS user (
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL
+        )
+    """
+    )
+
+
     conn.commit()
     
     conn.close()
