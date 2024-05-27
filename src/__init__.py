@@ -8,7 +8,7 @@ import sqlite3
 
 from src.model.sw_major.sw_major_model import create_sw_major_notice, read_sw_major_notice_metadata, read_sw_major_notice_detail
 from src.model.sw_7up.sw_7up_model import create_sw_7up_notice, read_sw_7up_notice, read_sw_7up_notice_detail
-from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email
+from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email, login_user, logout_user
 
 from src import constants
 
@@ -64,6 +64,25 @@ def create_app():
 
         create_user(username, password, email)
         return jsonify({"message": "User created successfully"}), 201
+
+    @app.route('/login', methods=['POST'])
+    def login():
+        if request.method == 'POST':
+            data = request.json
+            username = data.get("username")
+            password = data.get("password")
+
+            result_login = login_user(username, password)
+            if result_login:
+                return jsonify({"message": "login success"}), 201
+            else:
+                return jsonify({"error": "Invalid username or password"}), 401
+
+    @app.route('/logout')
+    def logout():
+        result_logout = logout_user()
+        if result_logout:
+            return jsonify({"message": "logout success"}), 200
 
 
     return app
