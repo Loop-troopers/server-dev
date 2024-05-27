@@ -1,7 +1,7 @@
 import sqlite3
 import asyncio
 from src.api.sw_7up.scrape import scrape_sw7up_notice
-
+from src import constants
 
 ## 소중사 홈페이지 공지사항 메타데이터
 # CREATE
@@ -11,7 +11,7 @@ def create_sw_7up_notice():
     if not all_notice:
         return
 
-    conn = sqlite3.connect("../db")
+    conn = sqlite3.connect(constants.database_path)
     c = conn.cursor()
     existing_titles = set(row[1] for row in c.fetchall())
 
@@ -38,7 +38,7 @@ def create_sw_7up_notice():
 
 # READ
 def read_sw_7up_notice():
-    conn = sqlite3.connect("../db")
+    conn = sqlite3.connect(constants.database_path)
     sw_7up_metadata = []
     c = conn.cursor()
     c.execute("SELECT * FROM sw_7up_notice")
@@ -60,7 +60,7 @@ def read_sw_7up_notice():
 
 # READ(detail)
 def read_sw_7up_notice_detail(notice_id):
-    conn = sqlite3.connect("../db")
+    conn = sqlite3.connect(constants.database_path)
 
     c = conn.cursor()
     c.execute("SELECT * FROM sw_7up_notice WHERE notice_id = ?",  (notice_id,))

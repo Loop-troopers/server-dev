@@ -10,6 +10,7 @@ from src.model.sw_major.sw_major_model import create_sw_major_notice, read_sw_ma
 from src.model.sw_7up.sw_7up_model import create_sw_7up_notice, read_sw_7up_notice, read_sw_7up_notice_detail
 from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email
 
+from src import constants
 
 def create_app():
     app = Flask(__name__)
@@ -49,18 +50,6 @@ def create_app():
         # JSON 형태로 반환
         return jsonify(sw_7up_notice_detail)
 
-    @app.route("/bookmark", methods=['POST'])
-    def set_bookmark():
-        # 요청에서 JSON 데이터를 가져오기
-        data = request.get_json()
-        print(data)
-
-        response = {
-            'received_data': data
-        }
-
-        return jsonify(response)
-    
     @app.route("/register", methods=["POST"])
     def register(): #data.get ->
         data = request.json
@@ -82,7 +71,8 @@ def create_app():
 # 데이터베이스 초기화
 def init_db():
     print("Connected to db")
-    conn = sqlite3.connect("../db")
+    
+    conn = sqlite3.connect(constants.database_path)
     cursor = conn.cursor()
     # 소웨 과페이지 테이블 생성
     cursor.execute(
