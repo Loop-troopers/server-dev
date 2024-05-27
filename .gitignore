@@ -1,6 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/pythonvanilla
 # Edit at https://www.toptal.com/developers/gitignore?templates=pythonvanilla
 scrapper-venv/
+# Environments
+.env
 ### PythonVanilla ###
 # Byte-compiled / optimized / DLL files
 .DS_Store
@@ -15,7 +17,7 @@ __pycache__/
 # Scrapper & Crawler
 src/api/
 # Database
-db
+src/db/
 # Distribution / packaging
 .Python
 build/

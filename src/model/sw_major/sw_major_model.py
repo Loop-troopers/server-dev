@@ -1,6 +1,6 @@
 import sqlite3
 from src.api.sw_major.scrape import scrape_sw_major_notice
-
+from src import constants
 
 ## 소프트웨어학과 홈페이지 공지사항
 # CREATE
@@ -10,7 +10,7 @@ def create_sw_major_notice():
     if not all_notice:
         return
 
-    conn = sqlite3.connect("../db")
+    conn = sqlite3.connect(constants.database_path)
     c = conn.cursor()
 
     for notice_item in all_notice:
@@ -40,7 +40,7 @@ def create_sw_major_notice():
 
 # READ(all)
 def read_sw_major_notice_metadata():
-    conn = sqlite3.connect("../db")
+    conn = sqlite3.connect(constants.database_path)
     sw_major_metadata = []
     c = conn.cursor()
     c.execute("SELECT * FROM sw_major_notice")
@@ -63,7 +63,7 @@ def read_sw_major_notice_metadata():
 
 # READ(detail)
 def read_sw_major_notice_detail(notice_id):
-    conn = sqlite3.connect("../db")
+    conn = sqlite3.connect(constants.database_path)
 
     c = conn.cursor()
     c.execute("SELECT * FROM sw_major_notice WHERE notice_id = ?",  (notice_id,))
