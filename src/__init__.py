@@ -16,6 +16,7 @@ def create_app():
     app = Flask(__name__)
     # CORS(app)
     # CORS(app, resources={r"/api/*": {"origins": "*"}})
+    app.secret_key = 'supersecretkey'
 
     # 데이터베이스 초기화와 데이터 추가
     init_db()
