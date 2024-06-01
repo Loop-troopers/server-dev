@@ -3,25 +3,14 @@ import os
 
 # 파이썬 시스템 실행경로 추가
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request
 import sqlite3
 
 from src.model.sw_major.sw_major_model import create_sw_major_notice, read_sw_major_notice_metadata, read_sw_major_notice_detail
 from src.model.sw_7up.sw_7up_model import create_sw_7up_notice, read_sw_7up_notice, read_sw_7up_notice_detail
-from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email, login_user, logout_user, update_user_password, check_password, login_required
+from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email, login_user, logout_user
 
 from src import constants
-
-# 로그인 확인 데코레이터 함수 추가
-from functools import wraps
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return jsonify({"error": "Login required"}), 401
-        return f(*args, **kwargs)
-    return decorated_function
 
 def create_app():
     app = Flask(__name__)
@@ -96,24 +85,6 @@ def create_app():
         if result_logout:
             return jsonify({"message": "logout success"}), 200
 
-    @app.route('/edit_password', methods=['PATCH'])
-    @login_required
-    def update_password():
-        if request.method == 'PATCH':
-            data = request.json
-            print(data)
-            username = session.get('username')
-            old_password = data.get("oldPassword")
-            new_password = data.get("newPassword")
-
-            if not check_password(username, old_password):
-                return jsonify({"error": "Incorrect current password"}), 400
-
-            success = update_user_password(username, new_password)
-            if success:
-                return jsonify({"message": "Password updated successfully"}), 200
-            else:
-                return jsonify({"error": "Failed to update password"}), 500
 
     return app
 
