@@ -90,6 +90,7 @@ def create_app():
                 return jsonify({"message": "Password updated successfully"}), 200
             else:
                 return jsonify({"error": "Failed to update password"}), 500
+            
     #북마크 추가      
     @app.route("/bookmark", methods=['POST'])
     def post_create_bookmarks():
@@ -101,16 +102,19 @@ def create_app():
 
         if (result):
             return jsonify({"message": "Bookmark created successfully"}), 201
+        
     #북마크 삭제
     @app.route("/bookmark/<noticed_id>", methods=['DELETE'])
     def get_delete_bookmarks(noticed_id):
         data = request.json
         delete_bookmarks(noticed_id)
         return jsonify({"message": "Bookmark deleted successfully"}), 200
+    
     #사용자 북마크 가져오기
     @app.route("/user_bookmarks")
     def get_user_bookmarks():
         bookmarks = read_user_bookmarks()
+        return jsonify(bookmarks)
 
     return app
 
