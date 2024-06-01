@@ -90,6 +90,27 @@ def create_app():
                 return jsonify({"message": "Password updated successfully"}), 200
             else:
                 return jsonify({"error": "Failed to update password"}), 500
+    #북마크 추가      
+    @app.route("/bookmark", methods=['POST'])
+    def post_create_bookmarks():
+        data = request.json
+        print(data)
+        notice_id = data.get("noticeId")
+        # print("ddddd", notice_id)
+        result = create_bookmark(notice_id)
+
+        if (result):
+            return jsonify({"message": "Bookmark created successfully"}), 201
+    #북마크 삭제
+    @app.route("/bookmark/<noticed_id>", methods=['DELETE'])
+    def get_delete_bookmarks(noticed_id):
+        data = request.json
+        delete_bookmarks(noticed_id)
+        return jsonify({"message": "Bookmark deleted successfully"}), 200
+    #사용자 북마크 가져오기
+    @app.route("/user_bookmarks")
+    def get_user_bookmarks():
+        bookmarks = read_user_bookmarks()
 
     return app
 
@@ -141,7 +162,20 @@ def init_db():
 
 
     conn.commit()
-    
+
+    #북마크 테이블 생성
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS bookmark_notice
+        (bookmark_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id NOT NULL,
+        notice_id NOT NULL,
+        FOREIGN KEY(user_id) REFERENCES user(user_id),
+        FOREIGN KEY(notice_id) REFERENCES notice(notice_id))
+        """
+    )
+    conn.commit()
+
     conn.close()
 
 
