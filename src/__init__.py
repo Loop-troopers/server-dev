@@ -137,17 +137,6 @@ def init_db():
     )
     conn.commit()
 
-    # 북마크 테이블 생성
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS bookmark_notice
-        (id INTEGER PRIMARY KEY,
-        user_id INTEGER NOT NULL,
-        notice_id INTEGER NOT NULL,
-        notice_group TEXT NOT NULL)
-    """
-    )
-    
     # 유저 테이블 생성
     cursor.execute(
         """
