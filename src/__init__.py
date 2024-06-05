@@ -6,9 +6,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from flask import Flask, jsonify, request, session
 import sqlite3
 
-from src.model.sw_major.sw_major_model import create_sw_major_notice, read_sw_major_notice_metadata, read_sw_major_notice_detail
-from src.model.sw_7up.sw_7up_model import create_sw_7up_notice, read_sw_7up_notice, read_sw_7up_notice_detail
-
+from src.model.notice.notice_model import create_sw_major_notice, create_sw_7up_notice, read_notice_metadata, read_notice_detail
+from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email, login_user, logout_user,check_password, update_user_password, login_required
+from src.model.bookmark.bookmark_model import create_bookmark, read_user_bookmarks, delete_bookmark
 
 from src import constants
 
@@ -24,32 +24,19 @@ def create_app():
     create_sw_major_notice()
     create_sw_7up_notice()
 
-    @app.route("/sw_major_notice")
-    def get_sw_major_notice_metadata():
-        sw_major_notice_metadata = read_sw_major_notice_metadata()
+    # API(GET): 공지사항
+    @app.route("/notice")
+    def get_notice_metadata():
+        notice_metadata = read_notice_metadata()
 
-        # JSON 형태로 반환
-        return jsonify(sw_major_notice_metadata)
-    @app.route("/sw_major_notice/<noticeId>")
-    def get_sw_major_notice_detail(noticeId):
-        sw_major_notice_detail = read_sw_major_notice_detail(noticeId)
+        return jsonify(notice_metadata)
 
-        # JSON 형태로 반환
-        return jsonify(sw_major_notice_detail)
+    # API(GET): 공지사항 상세
+    @app.route("/notice/<noticeId>")
+    def get_notice_detail(noticeId):
+        notice_detail = read_notice_detail(noticeId)
 
-    @app.route("/sw_7up_notice")
-    def get_sw_7up_notice():
-        sw_7up_notice = read_sw_7up_notice()
-
-        # JSON 형태로 반환
-        return jsonify(sw_7up_notice)
-
-    @app.route("/sw_7up_notice/<noticeId>")
-    def get_sw_7up_detail(noticeId):
-        sw_7up_notice_detail = read_sw_7up_notice_detail(noticeId)
-
-        # JSON 형태로 반환
-        return jsonify(sw_7up_notice_detail)
+        return jsonify(notice_detail)
 
     @app.route("/register", methods=["POST"])
     def register(): #data.get ->
@@ -84,80 +71,76 @@ def create_app():
         result_logout = logout_user()
         if result_logout:
             return jsonify({"message": "logout success"}), 200
+
+    @app.route('/edit_password', methods=['PATCH'])
+    @login_required
+    def update_password():
+        if request.method == 'PATCH':
+            data = request.json
+            print(data)
+            username = session.get('username')
+            old_password = data.get("oldPassword")
+            new_password = data.get("newPassword")
+
+            if not check_password(username, old_password):
+                return jsonify({"error": "Incorrect current password"}), 400
+
+            success = update_user_password(username, new_password)
+            if success:
+                return jsonify({"message": "Password updated successfully"}), 200
+            else:
+                return jsonify({"error": "Failed to update password"}), 500
+            
+    #북마크 추가      
+    @app.route("/bookmark", methods=['POST'])
+    def post_create_bookmarks():
+        data = request.json
+        print(data)
+        notice_id = data.get("noticeId")
+        # print("ddddd", notice_id)
+        result = create_bookmark(notice_id)
+
+        if (result):
+            return jsonify({"message": "Bookmark created successfully"}), 201
         
-
-    @app.route('/user_information', methods=['GET'])
-    def user_information():
-        if 'username' not in session or 'user_id' not in session:
-            return jsonify({"error": "User not found in session"}), 401
-
-        username = session['username']
-
-        return jsonify({
-            "username": username,
-        })
-
-    @app.route('/withdraw', methods=['DELETE'])
-    def delete():
-        user_id = session['user_id']
-        username = session['username']
-        if not username or not user_id:
-            return jsonify({"error": "User is not in login status"}), 400
-
-        success_delete_user = delete_user(user_id)
-        if success_delete_user is None:
-            return jsonify({"error": "Invalid username or password"}), 401
-        elif not success_delete_user:
-            return jsonify({"error": "Failed to delete user"}), 500
-        
-        return jsonify({"message": "User deleted successfully"}), 200
+    #북마크 삭제
+    @app.route("/bookmark/<noticed_id>", methods=['DELETE'])
+    def delete_user_bookmark(noticed_id):
+        data = request.json
+        delete_bookmark(noticed_id)
+        return jsonify({"message": "Bookmark deleted successfully"}), 200
+    
+    #사용자 북마크 가져오기
+    @app.route("/user_bookmarks")
+    def get_user_bookmarks():
+        bookmarks = read_user_bookmarks()
+        return jsonify(bookmarks)
 
     return app
 
 # 데이터베이스 초기화
 def init_db():
     print("Connected to db")
-    
+
     conn = sqlite3.connect(constants.database_path)
     cursor = conn.cursor()
-    # 소웨 과페이지 테이블 생성
+    # 공지사항 테이블 생성
     cursor.execute(
         """
-        CREATE TABLE IF NOT EXISTS sw_major_notice
-        (notice_id INTEGER PRIMARY KEY, 
-        category TEXT, 
-        title TEXT, 
-        created_at TEXT,
-        body TEXT,
-        image_urls TEXT,
-        tables TEXT
+        CREATE TABLE IF NOT EXISTS notice (
+            notice_id TEXT PRIMARY KEY,
+            notice_group TEXT,
+            category TEXT,
+            title TEXT,
+            created_at TEXT,
+            body TEXT,
+            image_urls TEXT,
+            tables TEXT
         )
     """
     )
     conn.commit()
-    
-    # 소중사 과페이지 테이블 생성
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS sw_7up_notice
-        (notice_id TEXT PRIMARY KEY, 
-        title TEXT, 
-        body TEXT)
-    """
-    )
-    conn.commit()
 
-    # 북마크 테이블 생성
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS bookmark_notice
-        (id INTEGER PRIMARY KEY,
-        user_id INTEGER NOT NULL,
-        notice_id INTEGER NOT NULL,
-        notice_group TEXT NOT NULL)
-    """
-    )
-    
     # 유저 테이블 생성
     cursor.execute(
         """
@@ -172,7 +155,20 @@ def init_db():
 
 
     conn.commit()
-    
+
+    #북마크 테이블 생성
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS bookmark_notice
+        (bookmark_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id NOT NULL,
+        notice_id NOT NULL,
+        FOREIGN KEY(user_id) REFERENCES user(user_id),
+        FOREIGN KEY(notice_id) REFERENCES notice(notice_id))
+        """
+    )
+    conn.commit()
+
     conn.close()
 
 
