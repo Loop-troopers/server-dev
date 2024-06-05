@@ -8,7 +8,7 @@ import sqlite3
 
 from src.model.notice.notice_model import create_sw_major_notice, create_sw_7up_notice, read_notice_metadata, read_notice_detail
 from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email, login_user, logout_user,check_password, update_user_password, login_required
-from src.model.bookmark.bookmark_model import create_bookmark, read_user_bookmarks, delete_bookmarks
+from src.model.bookmark.bookmark_model import create_bookmark, read_user_bookmarks, delete_bookmark
 
 from src import constants
 
@@ -105,9 +105,9 @@ def create_app():
         
     #북마크 삭제
     @app.route("/bookmark/<noticed_id>", methods=['DELETE'])
-    def get_delete_bookmarks(noticed_id):
+    def delete_user_bookmark(noticed_id):
         data = request.json
-        delete_bookmarks(noticed_id)
+        delete_bookmark(noticed_id)
         return jsonify({"message": "Bookmark deleted successfully"}), 200
     
     #사용자 북마크 가져오기
