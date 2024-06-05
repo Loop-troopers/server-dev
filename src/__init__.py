@@ -26,17 +26,17 @@ def create_app():
 
     # API(GET): 공지사항
     @app.route("/notice")
-    def get_sw_major_notice_metadata():
-        sw_major_notice_metadata = read_notice_metadata()
+    def get_notice_metadata():
+        notice_metadata = read_notice_metadata()
 
-        return jsonify(sw_major_notice_metadata)
+        return jsonify(notice_metadata)
 
     # API(GET): 공지사항 상세
     @app.route("/notice/<noticeId>")
-    def get_sw_major_notice_detail(noticeId):
-        sw_major_notice_detail = read_notice_detail(noticeId)
+    def get_notice_detail(noticeId):
+        notice_detail = read_notice_detail(noticeId)
 
-        return jsonify(sw_major_notice_detail)
+        return jsonify(notice_detail)
 
     @app.route("/register", methods=["POST"])
     def register(): #data.get ->
