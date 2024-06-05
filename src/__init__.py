@@ -7,8 +7,8 @@ from flask import Flask, jsonify, request, session
 import sqlite3
 
 from src.model.notice.notice_model import create_sw_major_notice, create_sw_7up_notice, read_notice_metadata, read_notice_detail
-from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email, login_user, logout_user,check_password, update_user_password, login_required
-from src.model.bookmark.bookmark_model import create_bookmark, read_user_bookmarks, delete_bookmark, delete_user
+from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email, login_user, logout_user,check_password, update_user_password, login_required, delete_user
+from src.model.bookmark.bookmark_model import create_bookmark, read_user_bookmarks, delete_bookmark
 
 from src import constants
 
