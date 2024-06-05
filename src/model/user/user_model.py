@@ -67,11 +67,10 @@ def check_password(username, password):
     conn.close()
     return user is not None
 
-def update_user_password(username, new_password):
+def delete_user(user_id):
     conn = sqlite3.connect(constants.database_path)
     cursor = conn.cursor()
-    cursor.execute("UPDATE user SET password = ? WHERE username = ?", (new_password, username))
+    cursor.execute("DELETE FROM user WHERE user_id = ?", (user_id,))
     conn.commit()
-    updated = cursor.rowcount > 0
     conn.close()
-    return updated
+    return True
