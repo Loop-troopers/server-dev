@@ -75,3 +75,11 @@ def update_user_password(username, new_password):
     conn.close()
     return updated
 
+def delete_user(user_id):
+    conn = sqlite3.connect(constants.database_path)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM user WHERE user_id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+    return True
+

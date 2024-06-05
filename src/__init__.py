@@ -8,7 +8,7 @@ import sqlite3
 
 from src.model.notice.notice_model import create_sw_major_notice, create_sw_7up_notice, read_notice_metadata, read_notice_detail
 from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email, login_user, logout_user,check_password, update_user_password, login_required
-from src.model.bookmark.bookmark_model import create_bookmark, read_user_bookmarks, delete_bookmark
+from src.model.bookmark.bookmark_model import create_bookmark, read_user_bookmarks, delete_bookmark, delete_user
 
 from src import constants
 
@@ -71,6 +71,35 @@ def create_app():
         result_logout = logout_user()
         if result_logout:
             return jsonify({"message": "logout success"}), 200
+        
+####
+    @app.route('/user_information', methods=['GET'])
+    def user_information():
+        if 'username' not in session or 'user_id' not in session:
+            return jsonify({"error": "User not found in session"}), 401
+
+        username = session['username']
+
+        return jsonify({
+            "username": username,
+        })
+
+    @app.route('/withdraw', methods=['DELETE'])
+    def delete():
+        user_id = session['user_id']
+        username = session['username']
+        if not username or not user_id:
+            return jsonify({"error": "User is not in login status"}), 400
+
+        success_delete_user = delete_user(user_id)
+        if success_delete_user is None:
+            return jsonify({"error": "Invalid username or password"}), 401
+        elif not success_delete_user:
+            return jsonify({"error": "Failed to delete user"}), 500
+        
+        return jsonify({"message": "User deleted successfully"}), 200
+
+
 
     @app.route('/edit_password', methods=['PATCH'])
     @login_required
