@@ -3,6 +3,7 @@ from api.sw_7up.scrape import scrape_sw7up_notice
 import asyncio
 from src import constants
 import sqlite3
+from flask import session
 
 # 소프트웨어학과 홈페이지 공지사항
 # CREATE
@@ -109,6 +110,9 @@ def read_notice_detail(notice_id):
     c = conn.cursor()
     c.execute("SELECT * FROM notice WHERE notice_id = ?",  (notice_id,))
     row = c.fetchone()
+    user_id = session['user_id']
+
+    c.execute("SELECT * FROM bookmark_notice WHERE notice_id = ? and user_id = ?",  (notice_id, user_id))
 
     notice_detail = {
         "noticeId": row["notice_id"],

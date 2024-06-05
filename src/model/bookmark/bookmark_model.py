@@ -58,7 +58,7 @@ def read_user_bookmarks():
     return notices
 
 # DELETE
-def delete_bookmarks(noticed_id):
+def delete_bookmark(noticed_id):
     conn = sqlite3.connect(constants.database_path)
     user_id = session['user_id']
 

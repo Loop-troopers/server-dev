@@ -40,7 +40,6 @@ def read_user_by_email(email):
     return user
 
 def login_user(username, password):
-    print("user: ", username, password)
     conn = sqlite3.connect(constants.database_path)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM user WHERE username = ? AND password = ?", (username, password))
@@ -67,10 +66,12 @@ def check_password(username, password):
     conn.close()
     return user is not None
 
-def delete_user(user_id):
+def update_user_password(username, new_password):
     conn = sqlite3.connect(constants.database_path)
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM user WHERE user_id = ?", (user_id,))
+    cursor.execute("UPDATE user SET password = ? WHERE username = ?", (new_password, username))
     conn.commit()
+    updated = cursor.rowcount > 0
     conn.close()
-    return True
+    return updated
+
