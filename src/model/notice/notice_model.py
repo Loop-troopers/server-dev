@@ -18,6 +18,7 @@ def create_sw_major_notice():
     c = conn.cursor()
 
     for notice_item in all_notice:
+        print(notice_item)
         notice_id = notice_item["noticeId"]
         notice_group = notice_item["noticeGroup"]
         category = notice_item.get('category', None)
@@ -57,6 +58,7 @@ def create_sw_7up_notice():
     existing_titles = set(row[0] for row in c.fetchall())
 
     for notice_item in all_notice:
+        print(notice_item)
         title = notice_item["title"]
         if title in existing_titles:
             continue
@@ -110,9 +112,6 @@ def read_notice_detail(notice_id):
     c = conn.cursor()
     c.execute("SELECT * FROM notice WHERE notice_id = ?",  (notice_id,))
     row = c.fetchone()
-    user_id = session['user_id']
-
-    c.execute("SELECT * FROM bookmark_notice WHERE notice_id = ? and user_id = ?",  (notice_id, user_id))
 
     notice_detail = {
         "noticeId": row["notice_id"],

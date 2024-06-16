@@ -8,7 +8,7 @@ import sqlite3
 
 from src.model.notice.notice_model import create_sw_major_notice, create_sw_7up_notice, read_notice_metadata, read_notice_detail
 from src.model.user.user_model import create_user, read_user_by_username, read_user_by_email, login_user, logout_user,check_password, update_user_password, login_required, delete_user
-from src.model.bookmark.bookmark_model import create_bookmark, read_user_bookmarks, delete_bookmark
+from src.model.bookmark.bookmark_model import create_bookmark, read_user_bookmarks, delete_bookmark, read_user_like
 
 from src import constants
 
@@ -35,6 +35,8 @@ def create_app():
     @app.route("/notice/<noticeId>")
     def get_notice_detail(noticeId):
         notice_detail = read_notice_detail(noticeId)
+        is_user_bookmarked = read_user_like(noticeId)
+        notice_detail["isUserBookmarked"] = is_user_bookmarked
 
         return jsonify(notice_detail)
 
@@ -44,7 +46,6 @@ def create_app():
         username = data.get("username")
         password = data.get("password")
         email = data.get("email")
-        print("정보", username, password, email)
         if read_user_by_username(username):
             return jsonify({"error": "Username already exists"}), 400
         if read_user_by_email(email):
@@ -106,7 +107,6 @@ def create_app():
     def update_password():
         if request.method == 'PATCH':
             data = request.json
-            print(data)
             username = session.get('username')
             old_password = data.get("oldPassword")
             new_password = data.get("newPassword")
@@ -124,9 +124,7 @@ def create_app():
     @app.route("/bookmark", methods=['POST'])
     def post_create_bookmarks():
         data = request.json
-        print(data)
         notice_id = data.get("noticeId")
-        # print("ddddd", notice_id)
         result = create_bookmark(notice_id)
 
         if (result):
@@ -135,7 +133,7 @@ def create_app():
     #북마크 삭제
     @app.route("/bookmark/<noticed_id>", methods=['DELETE'])
     def delete_user_bookmark(noticed_id):
-        data = request.json
+        # data = request.json
         delete_bookmark(noticed_id)
         return jsonify({"message": "Bookmark deleted successfully"}), 200
     
