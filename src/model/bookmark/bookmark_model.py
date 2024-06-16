@@ -58,15 +58,30 @@ def read_user_bookmarks():
     return notices
 
 # DELETE
-def delete_bookmark(noticed_id):
+def delete_bookmark(notice_id):
     conn = sqlite3.connect(constants.database_path)
     user_id = session['user_id']
 
     c = conn.cursor()
-    c.execute("DELETE FROM bookmark_notice WHERE user_id = ? AND notice_id = ?", (user_id, noticed_id))
+    c.execute("DELETE FROM bookmark_notice WHERE user_id = ? AND notice_id = ?", (user_id, notice_id))
     conn.commit()
     c.close()
     conn.close()
 
     return
+
+# READ: isUserLike
+def read_user_like(notice_id):
+    conn = sqlite3.connect(constants.database_path)
+    user_id = session['user_id']
+
+    c = conn.cursor()
+    c.execute("SELECT notice_id FROM bookmark_notice WHERE user_id = ? AND notice_id = ?", (user_id, notice_id))
+    notice_id = c.fetchone()
+
+    conn.commit()
+    c.close()
+    conn.close()
+
+    return False if notice_id is None else True
 
